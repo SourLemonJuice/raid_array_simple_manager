@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 配置
-Raid_Name=('/dev/md/test')
+Raid_Name='/dev/md/test'
 Raid_Devices=('/dev/sda' '/dev/sdb')
 
 # 加载依赖
