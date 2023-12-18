@@ -40,6 +40,9 @@ case $1 in
         echo "即将 待机设备 ${Raid_Devices[@]}"
         hdparm -y
     ;;
+    check)
+        echo idle > /sys/block/md0/md/sync_action
+    ;;
     *)
         echo '非法参数'
         exit 1
