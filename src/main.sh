@@ -5,8 +5,8 @@ Raid_Name='/dev/md/test'
 Raid_Devices=('/dev/sda' '/dev/sdb')
 
 # 加载依赖
-source ./lib/errored_exit.sh || llib_errored_exit
-source ./lib/prompts_need_perm.sh || llib_errored_exit
+source ./lib/errored_exit.sh || exit 1
+source ./lib/prompts_need_perm.sh || exit 1
 
 # 检查权限
 llib_prompts_need_perm 1 0
@@ -16,6 +16,9 @@ case $1 in
 
     info)
         mdadm -D $Raid_Name
+    ;;
+    status)
+        cat /proc/mdstat
     ;;
     umount)
         read -t 5 -p '这项操作可能非常危险，要确定吗[y/n]' input
