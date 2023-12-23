@@ -20,7 +20,7 @@ case $1 in
     status)
         cat /proc/mdstat
     ;;
-    umount)
+    stop)
         read -t 5 -p '这项操作可能非常危险，要确定吗[y/n]' input
         llib_errored_exit
         case $input in
@@ -33,23 +33,31 @@ case $1 in
             ;;
         esac
 
+        # 卸载文件系统
         echo '即将卸载文件系统'
         umount $Raid_Name
-        echo '卸载命令执行结束'
-        sleep 4
+        llib_errored_exit
+
+        # 关闭阵列
         echo '即将关闭阵列'
         mdadm --stop $Raid_Name
+        llib_errored_exit
         echo '关闭命令执行结束'
-        sleep 4
+
+        # 待机设备
         echo "即将 待机设备 ${Raid_Devices[@]}"
         hdparm -y ${Raid_Devices[@]}
-    ;;
-    check)
-        echo idle > /sys/block/md0/md/sync_action
+        llib_errored_exit
     ;;
     mount)
         mdadm --assemble $Raid_Name
         mount $Raid_Name
+    ;;
+    check)
+        echo idle > /sys/block/md0/md/sync_action
+    ;;
+    help)
+        echo "help | info | status | mount | stop | check"
     ;;
     *)
         echo '非法参数'
