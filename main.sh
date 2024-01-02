@@ -52,7 +52,8 @@ main() {
         cat /proc/mdstat
         ;;
     stop)
-        read -t 5 -p '这项操作可能非常危险，要确定吗[y/n]' input
+        read -t 5 -p '这项操作可能非常危险，要确定吗[y/N]' input
+        # 如果时间到了没有输入则主动退出
         llib_errored_exit
         case $input in
         y | Y)
@@ -114,7 +115,21 @@ main() {
 # 将阵列名转换为设备编号而非有名称的链接，并检查他们是否存在
 # 使用 (realpath -e) 是因为这样只解析存在的路径或文件，否则会报错
 Raid_Name=$(realpath -e $Raid_Name)
-llib_errored_exit
+# 如果报错则给出提示，确保用户没有输错(阵列关闭了也没有块设备)
+if [[ ! $? == 0 ]]; then
+    read -t 5 -p '没有指定的块设备(可能是阵列已经关闭) 是否继续[y/N]' input
+    # 如果时间到了没有输入则主动退出
+    llib_errored_exit
+    case $input in
+    y | Y)
+        :
+        ;;
+    *)
+        echo '操作取消'
+        exit
+        ;;
+    esac
+fi
 
 # 检查 Raid_Devices 是否存在且为块设备
 for i in ${Raid_Devices[@]}; do
