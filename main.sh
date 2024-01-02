@@ -87,7 +87,7 @@ main() {
         ;;
     check)
         # 获取设备编号
-        Raid_BlockNum=$(basename $Raid_Name)
+        Raid_BlockNum=$(basename $Raid_Name_Num)
         # 以防万一检测一遍在执行
         [[ -f /sys/block/${Raid_BlockNum}/md/sync_action ]] || llib_errored_exit
         # 提示信息
@@ -114,7 +114,7 @@ main() {
 
 # 将阵列名转换为设备编号而非有名称的链接，并检查他们是否存在
 # 使用 (realpath -e) 是因为这样只解析存在的路径或文件，否则会报错
-Raid_Name=$(realpath -e $Raid_Name)
+Raid_Name_Num=$(realpath -e $Raid_Name)
 # 如果报错则给出提示，确保用户没有输错(阵列关闭了也没有块设备)
 if [[ ! $? == 0 ]]; then
     read -t 5 -p '没有指定的块设备(可能是阵列已经关闭) 是否继续[y/N]' input
