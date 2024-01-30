@@ -98,6 +98,12 @@ main() {
         echo check >/sys/block/${Raid_BlockNum}/md/sync_action
         # 向这个文件输入 idel 可以安全的暂停检查，重启也同样会安全暂停并在开机时继续
         ;;
+    setTimeout)
+        read -p "超时时间/s" Time_Out_value
+        # hdparm -S 接受的参数乘以 5秒 才是最终秒数
+        $((Time_Out_value /= 5))
+        hdparm -S "$Time_Out_value" ${Raid_Devices[@]}
+        ;;
     help)
         echo "help | info | status | mount | stop | check"
         ;;
