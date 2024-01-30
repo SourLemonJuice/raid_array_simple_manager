@@ -52,19 +52,6 @@ main() {
         cat /proc/mdstat
         ;;
     stop)
-        read -t 5 -p '这项操作可能非常危险，要确定吗[y/N]' input
-        # 如果时间到了没有输入则主动退出
-        llib_errored_exit
-        case $input in
-        y | Y)
-            :
-            ;;
-        *)
-            echo '操作取消'
-            exit
-            ;;
-        esac
-
         # 卸载文件系统
         echo '即将卸载文件系统'
         umount $Raid_Name
@@ -75,6 +62,19 @@ main() {
         mdadm --stop $Raid_Name
         llib_errored_exit
         echo '关闭命令执行结束'
+        ;;
+    standby)
+        # 安全提醒，而且如果时间到了没有输入则主动退出
+        read -t 5 -p '这项操作非常危险，要确定吗[y/N]' input | exit 1
+        case $input in
+        y | Y)
+            :
+            ;;
+        *)
+            echo '操作取消'
+            exit
+            ;;
+        esac
 
         # 待机设备
         echo "即将 待机设备 ${Raid_Devices[@]}"
@@ -103,7 +103,7 @@ main() {
         hdparm -S "$Time_Out_value" ${Raid_Devices[@]}
         ;;
     help)
-        echo "help | info | status | mount | stop | check | setTimeout"
+        echo "help | info | status | mount | stop | standby | check | setTimeout"
         ;;
     *)
         echo '非法参数'
